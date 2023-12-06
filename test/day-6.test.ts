@@ -1,11 +1,7 @@
 import 'jest';
 import * as assert from 'assert';
-import * as fs from 'fs';
-import * as path from 'path';
 
 import { availableSpeedParams } from '../src/day-6';
-
-const input = fs.readFileSync(path.join(__dirname, 'input-6.txt'), { encoding: 'utf-8' });
 
 describe('test 6', function () {
   describe('test 6', () => {
