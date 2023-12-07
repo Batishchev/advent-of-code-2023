@@ -10,11 +10,12 @@ export function getRaces(_input: string): Race[] {
 }
 
 export function availableSpeedParams(race: Race): number {
-  const speed = 0;
   const [time, distance] = race;
+  const speed = 0;
+  const a = 1;
   const b = speed - time;
   const c = distance - speed * time;
-  const D = Math.pow(b, 2) - 4 * c;
+  const D = Math.pow(b, 2) - 4 * a * c;
 
   if (D < 0) {
     throw new Error('wrong input');
@@ -23,8 +24,8 @@ export function availableSpeedParams(race: Race): number {
   const x1 = (-b - Math.sqrt(D)) / 2;
   const x2 = (-b + Math.sqrt(D)) / 2;
 
-  const resX1 = x1 % 1 === 0 ? x1 + 1 : Math.ceil(x1);
-  const resX2 = x2 % 1 === 0 ? x2 - 1 : Math.floor(x2);
+  const resX1 = Math.floor(x1) + 1;
+  const resX2 = Math.ceil(x2) - 1;
 
   return Math.abs(resX1 - resX2) + 1;
 }
