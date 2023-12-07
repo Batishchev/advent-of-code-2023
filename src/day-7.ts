@@ -4,8 +4,8 @@ type Hand = {
 };
 
 const handRanks = ['11111', '2111', '221', '311', '32', '41', '5'];
-const cardsPriority = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-const jokerCardsPriority = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
+const cardsPriority = '23456789TJQKA'.split('');
+const jokerCardsPriority = 'J23456789TQKA'.split('');
 
 function getHandHash(hand: string): { [key: string]: number } {
   const chars = hand.split('');
@@ -26,22 +26,14 @@ function getRank(hand: string): number {
 function getRankJoker(hand: string): number {
   const handHash = getHandHash(hand);
   const jokers = handHash['J'] || 0;
-  if (jokers === 5) {
-    return 6;
-  }
-  const mapping = Object.entries(handHash)
-    .filter(([key]) => key !== 'J')
-    .map(([key, value]) => value)
-    .sort((a, b) => b - a);
-  mapping[0] += jokers;
-  return handRanks.indexOf(mapping.join(''));
+  delete handHash['J'];
+  const [first, ...rest] = Object.values(handHash).sort((a, b) => b - a);
+  return handRanks.indexOf([(first || 0) + jokers, ...rest].join(''));
 }
 
 function compareCards(a: string, b: string, priorities: string[]): number {
   for (let i = 0; i < a.length && i < b.length; i++) {
-    const ai = priorities.indexOf(a[i]);
-    const bi = priorities.indexOf(b[i]);
-    const res = ai - bi;
+    const res = priorities.indexOf(a[i]) - priorities.indexOf(b[i]);
     if (res !== 0) {
       return res;
     }
@@ -54,7 +46,7 @@ function getHands(input: string, ranking: (hand: string) => number): [Hand, numb
     .split(/\n/g)
     .filter((v) => v.trim().length > 0)
     .map((v) => v.split(/\s+/g))
-    .map<[Hand, number]>(([hand, bid]) => [{ value: hand, rank: ranking(hand) }, parseInt(bid, 10)]);
+    .map<[Hand, number]>(([value, bid]) => [{ value, rank: ranking(value) }, parseInt(bid, 10)]);
 }
 
 export function getWinning(input: string): number {

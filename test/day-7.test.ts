@@ -42,18 +42,5 @@ QQQJA 483
     it('input 4', function () {
       assert.equal(getWinningJoker(input), 248750248);
     });
-
-
-    // it('input 3', function () {
-    //   assert.equal(availableSpeedParams([30, 200]), 9);
-    // });
-
-    // it('input 4', function () {
-    //   assert.equal(availableSpeedParams([71530, 940200]), 71503);
-    // });
-
-    // it('input 5', function () {
-    //   assert.equal(availableSpeedParams([44806572, 208158110501102]), 34278221);
-    // });
   });
 });
