@@ -50,15 +50,15 @@ function getHands(input: string, ranking: (hand: string) => number): [Hand, numb
 }
 
 export function getWinning(input: string): number {
-  const hands = getHands(input, getRank).sort((a, b) => {
-    return a[0].rank - b[0].rank || compareCards(a[0].value, b[0].value, cardsPriority);
+  const hands = getHands(input, getRank).sort(([a], [b]) => {
+    return a.rank - b.rank || compareCards(a.value, b.value, cardsPriority);
   });
   return hands.reduce((acc, value, index) => acc + value[1] * (index + 1), 0);
 }
 
 export function getWinningJoker(input: string): number {
-  const hands = getHands(input, getRankJoker).sort((a, b) => {
-    return a[0].rank - b[0].rank || compareCards(a[0].value, b[0].value, jokerCardsPriority);
+  const hands = getHands(input, getRankJoker).sort(([a], [b]) => {
+    return a.rank - b.rank || compareCards(a.value, b.value, jokerCardsPriority);
   });
   return hands.reduce((acc, value, index) => acc + value[1] * (index + 1), 0);
 }
