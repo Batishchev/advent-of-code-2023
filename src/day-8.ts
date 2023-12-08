@@ -1,33 +1,42 @@
 type Command = 'L' | 'R';
 type Card = { [key: string]: [string, string] };
 
-import * as path from 'path';
-import * as fs from 'fs';
+function isSimple(value: number): boolean {
+  for (let i = 2; i < value; i++) {
+    if (value % i === 0) {
+      return false;
+    }
+  }
+  return true;
+}
 
-const input2 = fs.readFileSync(path.join(__dirname, '..', 'test', 'input-8.txt'), { encoding: 'utf-8' });
+function simpleMultipliers(value: number): { [key: string]: number } {
+  const res = [];
+  while (!isSimple(value)) {
+    for (var i = 2; !(isSimple(i) && value % i === 0); i++) {}
+    res.push(i);
+    value = value / i;
+  }
 
-const input = `RL
+  res.push(value);
 
-AAA = (BBB, CCC)
-BBB = (DDD, EEE)
-CCC = (ZZZ, GGG)
-DDD = (DDD, DDD)
-EEE = (EEE, EEE)
-GGG = (GGG, GGG)
-ZZZ = (ZZZ, ZZZ)`;
+  return res.reduce((acc, value) => {
+    acc[value] += 1;
+    return acc;
+  }, Object.fromEntries(res.map((value) => [value, 0])));
+}
 
-function parseInput(input: string): [Command[], Card] {
+function lcm(numbers: number[]): number {
+  const multipliers = numbers.map(simpleMultipliers);
+  const keys = Object.keys(multipliers.reduce((acc, value) => Object.assign(acc, value), {}));
+  const result = keys.map((key) => [parseInt(key, 10), Math.max(...multipliers.map((m) => m[key] || 0))]);
+  return result.reduce((acc, [a, b]) => acc * Math.pow(a, b), 1);
+}
+
+export function parseInput(input: string): [Card, Command[]] {
   const lines = input.split('\n');
-
-  return [getCommands(lines[0]), getCard(lines.slice(2))];
-}
-
-function getCommands(input: string): Command[] {
-  return input.split('') as Command[];
-}
-
-function getCard(input: string[]): Card {
-  const entries = input.map((line) => {
+  const commands: Command[] = lines[0].split('') as Command[];
+  const map = lines.slice(2).map((line, index) => {
     const match = line.match(/^(.*?) = \((.*?),\s(.*)\)$/);
     if (!match) {
       throw new Error('wrong input');
@@ -36,25 +45,24 @@ function getCard(input: string[]): Card {
     return [a, [b, c]];
   });
 
-  return Object.fromEntries(entries);
+  return [Object.fromEntries(map), commands];
 }
 
-function followPath(card: Card, commands: Command[]) {
-  const entry = Object.keys(card)[0];
-
-  let result = entry;
-  let number = 0;
-
-  while (result !== 'ZZZ') {
-    result = commands.reduce((acc, command) => card[acc][command === 'L' ? 0 : 1], result);
-    number += commands.length;
+export function followPath(
+  card: Card,
+  commands: Command[],
+  start: string = 'AAA',
+  check: (value: string) => boolean = (value) => value === 'ZZZ'
+) {
+  for (var i = 0, current = start; !check(current); i++) {
+    current = commands.reduce((acc, command) => card[acc][command === 'L' ? 0 : 1], current);
   }
 
-  return number;
+  return commands.length * i;
 }
 
-const [commands, card] = parseInput(input2);
-
-console.log(followPath(card, commands));
-
-// console.log(getCard(input.split('\n').slice(2)));
+export function followPaths(card: Card, commands: Command[], start: string[]) {
+  const check = (value: string) => value[2] === 'Z';
+  const paths = start.map((value) => followPath(card, commands, value, check));
+  return lcm(paths);
+}
