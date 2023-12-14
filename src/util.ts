@@ -6,17 +6,15 @@ export const chars = (value: string): string[] => value.split('');
 
 export function transpose(matrix: string[][]): string[][] {
   const [x, y] = [matrix.length, matrix[0].length];
-  const result = [];
+  const result = new Array(y);
 
   for (let j = 0; j < y; j++) {
     const value = new Array(x);
     for (let i = 0; i < x; value[i] = matrix[i++][j]) {}
-    result.push(value);
+    result[j] = value;
   }
+
   return result;
 }
 
-/**
- * Rotate matrix clockwise
- */
 export const rotate = (matrix: string[][]): string[][] => transpose(matrix).map((value) => value.reverse());
