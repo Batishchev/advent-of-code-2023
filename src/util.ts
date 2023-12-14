@@ -3,6 +3,9 @@ export const sum = (value: number[]) => value.reduce((acc, value) => acc + value
 export const prod = (value: number[]) => value.reduce((acc, value) => acc * value, 1);
 export const lines = (value: string): string[] => value.split(/\n/g).filter(nonEmpty);
 export const chars = (value: string): string[] => value.split('');
+export const toMatrix = (value: string): string[][] => lines(value).map(chars);
+export const fromMatrix = (matrix: string[][], colJoin = '', rowJoin = '\n'): string =>
+  matrix.map((v) => v.join(colJoin)).join(rowJoin);
 
 export function transpose(matrix: string[][]): string[][] {
   const [x, y] = [matrix.length, matrix[0].length];
@@ -17,4 +20,5 @@ export function transpose(matrix: string[][]): string[][] {
   return result;
 }
 
-export const rotate = (matrix: string[][]): string[][] => transpose(matrix).map((value) => value.reverse());
+export const rotateRight = (matrix: string[][]): string[][] => transpose(matrix).map((value) => value.reverse());
+export const rotateLeft = (matrix: string[][]): string[][] => transpose(matrix).reverse();
